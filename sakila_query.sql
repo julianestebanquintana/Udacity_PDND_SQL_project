@@ -26,8 +26,8 @@ SELECT film.title AS movie,
   JOIN rental AS rent
     ON inv.inventory_id = rent.inventory_id
  WHERE cat.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-GROUP BY movie, classification
-ORDER BY classification, movie;
+ GROUP BY movie, classification
+ ORDER BY classification, movie;
 
 
 /*  
@@ -50,7 +50,7 @@ WITH intermediate_table AS (
          ON cat.category_id = fcat.category_id
        JOIN film
          ON fcat.film_id = film.film_id
-   ORDER BY film.rental_duration
+      ORDER BY film.rental_duration
 )
 
 SELECT t1.movie,
@@ -94,7 +94,7 @@ SELECT category,
        COUNT(*)
   FROM dq
  WHERE category IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
-GROUP BY category, quartile;
+ GROUP BY category, quartile;
 
 
 /*
@@ -117,7 +117,7 @@ SELECT DATE_PART('year', ren.rental_date) AS year,
   JOIN store AS str
     ON stf.store_id = str.store_id
  GROUP BY year, month, office
- ORDER by year, month;
+ ORDER BY year, month;
 
 
 /*
@@ -128,7 +128,22 @@ payments. Can you write a query to capture the customer name, month and year of
 payment, and total payment amount for each month by these top 10 paying customers?
 */
 
+WITH top_payers AS (
+    SELECT ctmr.customer_id AS id,
+           CONCAT(ctmr.first_name, ' ', ctmr.last_name), 
+           SUM(pmt.amount) AS paid
+      FROM payment AS pmt 
+      JOIN customer AS ctmr
+        ON pmt.customer_id = ctmr.customer_id
+     GROUP BY ctmr.customer_id
+     ORDER BY paid DESC
+     LIMIT 10
+)
 
+SELECT *
+  FROM top_payers AS tp
+  JOIN payment AS pmt
+    ON tp.id = pmt.customer_id;
 
 
 /*
