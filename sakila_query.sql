@@ -107,8 +107,17 @@ each of the following: year, month, store ID and count of rental orders fulfille
 during that month.
 */
 
-
-
+SELECT DATE_PART('year', ren.rental_date) AS year,
+       DATE_PART('month', ren.rental_date) AS month,
+       str.store_id AS office,
+       COUNT(*)
+  FROM rental AS ren
+  JOIN staff AS stf
+    ON ren.staff_id = stf.staff_id
+  JOIN store AS str
+    ON stf.store_id = str.store_id
+ GROUP BY year, month, office
+ ORDER by year, month;
 
 
 /*
