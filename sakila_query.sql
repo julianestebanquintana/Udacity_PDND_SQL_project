@@ -40,6 +40,30 @@ quartiles (25%, 50%, 75%) of the rental duration for movies across all categorie
 Make sure to also indicate the category that these family-friendly movies fall into.
 */
 
+WITH intermediate_table AS (
+     SELECT film.title AS movie,
+            film.rental_duration AS duration,
+            cat.name AS category,
+            NTILE(4) OVER (ORDER BY film.rental_duration) AS quartile
+       FROM category AS cat
+       JOIN film_category AS fcat
+         ON cat.category_id = fcat.category_id
+       JOIN film
+         ON fcat.film_id = film.film_id
+   ORDER BY film.rental_duration
+)
+
+SELECT t1.movie,
+       t1.duration,
+       t1.category,
+       CASE 
+           WHEN quartile = 1 THEN 'first_quarter' 
+           WHEN quartile = 2 THEN 'second_quarter'
+           WHEN quartile = 3 THEN 'third_quarter'
+           WHEN quartile = 4 THEN 'final_quarter'
+       END         
+  FROM intermediate_table AS t1
+ WHERE t1.category IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music');
 
 
 /*
