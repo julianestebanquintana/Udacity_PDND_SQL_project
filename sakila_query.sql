@@ -15,7 +15,7 @@ and the number of times it has been rented out.
 
 SELECT film.title AS movie,
        cat.name AS classification,
-       count(rent.rental_id) AS times_rented
+       COUNT(rent.rental_id) AS times_rented
   FROM category AS cat
   JOIN film_category AS fcat
     ON cat.category_id = fcat.category_id
@@ -77,6 +77,24 @@ The resulting table should have three columns:
 - Count
 */
 
+WITH dq AS (
+    SELECT film.title AS movie, 
+           cat.name AS category,
+           film.rental_duration AS duration,
+           NTILE(4) OVER (ORDER BY film.rental_duration) AS quartile
+      FROM category AS cat
+      JOIN film_category AS fcat
+        ON cat.category_id = fcat.category_id
+      JOIN film 
+        ON fcat.film_id = film.film_id
+)
+
+SELECT category,
+       quartile,
+       COUNT(*)
+  FROM dq
+ WHERE category IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
+GROUP BY category, quartile;
 
 
 /*
