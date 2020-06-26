@@ -41,7 +41,7 @@ The resulting table should have three columns:
 - Count
 */
 
-WITH dq AS (
+WITH duration_quartiles AS (
     SELECT film.title AS movie, 
            cat.name AS category,
            film.rental_duration AS duration,
@@ -56,9 +56,10 @@ WITH dq AS (
 SELECT category,
        quartile,
        COUNT(*)
-  FROM dq
+  FROM duration_quartiles
  WHERE category IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
- GROUP BY category, quartile;
+ GROUP BY category, quartile
+ ORDER BY category, quartile;
 
 
 /*
